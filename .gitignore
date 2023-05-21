@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+.DS_Store
+
+wifi_settings/wifi_setting_2.h
+
+wifi_settings/wifi_setting.h
