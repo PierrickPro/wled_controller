@@ -32,7 +32,5 @@
 *.app
 
 .DS_Store
-
-wifi_settings/wifi_setting_2.h
-
-wifi_settings/wifi_setting.h
+network_settings/network_setting_2.h
+network_settings/network_setting.h

@@ -1,7 +1,7 @@
 #ifndef WIFI_INFO_H_
 #define WIFI_INFO_H_
 
-#include "wifi_settings/wifi_setting.h"
+#include "network_settings/network_setting.h"
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #elif defined(ESP32)
