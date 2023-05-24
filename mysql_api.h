@@ -24,9 +24,10 @@ String db_insert_wled_state(wled data) {
   http.begin(client, url);
   int http_code = http.GET();
 
-  String payload = "";
+  String response = "";
   if (http_code > 0) {
-    payload = http.getString();
+    Serial.println(url);
+    response = http.getString();
     Serial.println("GET Request Code: " + String(http_code));
   }
   else {
@@ -34,7 +35,7 @@ String db_insert_wled_state(wled data) {
   }
 
   http.end();
-  return payload;
+  return response;
 }
 
 wled db_get_wled_state_and_ip(unsigned long int controller_id, int click_type) {
