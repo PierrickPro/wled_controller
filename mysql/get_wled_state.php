@@ -1,8 +1,9 @@
 <?php
 
-if (isset($_GET["click_type"]) && isset($_GET["controller_id"])) {
+if (isset($_GET["click_type"]) && isset($_GET["controller_id"]) && isset($_GET["wled_ip"])) {
    $click_type = $_GET["click_type"]; // get click type value from HTTP GET
    $controller_id = $_GET["controller_id"]; // get controller ID value from HTTP GET
+   $wled_ip = $_GET["wled_ip"]; // get wled_ip value from HTTP GET
 
    $servername = "localhost";
    $username = "esp8266";
@@ -16,7 +17,7 @@ if (isset($_GET["click_type"]) && isset($_GET["controller_id"])) {
       die("MySQL connection failed: " . $connection->connect_error);
    }
 
-   $sql = "SELECT json_state, wled_ip FROM WLED_STATE WHERE click_type = '$click_type' AND controller_id = '$controller_id'";
+   $sql = "SELECT json_state, wled_ip FROM WLED_STATE WHERE click_type = '$click_type' AND controller_id = '$controller_id' AND wled_ip = '$wled_ip'";
 
    $result = $connection->query($sql);
 
@@ -33,7 +34,7 @@ if (isset($_GET["click_type"]) && isset($_GET["controller_id"])) {
       header('Content-Type: application/json');
       echo json_encode($response);
    } else {
-      echo "No records found for the given click type and controller ID";
+      echo "No records found for the given click type, controller ID, and wled_ip";
    }
 
    $connection->close();

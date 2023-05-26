@@ -1,7 +1,6 @@
 #ifndef WLED_API
 #define WLED_API
 
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include "wled.h"
 
@@ -13,11 +12,15 @@ String get_wled_state(String wled_ip) {
   String url = "http://" + wled_ip + "/json/state";
 
   http.begin(client, url);
-  int httpCode = http.GET();
+  int http_code = http.GET();
 
   String payload = "";
-  if (httpCode > 0) {
+  if (http_code == 200) {
+    Serial.println("GET request code " + String(http_code));
     payload = http.getString();
+  }
+  else if (http_code > 0) {
+    Serial.println("GET request error code: " + String(http_code));
   }
   else {
     Serial.println("Error on HTTP GET request");
@@ -33,12 +36,16 @@ String post_wled_state(String wled_ip, String json_state) {
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
-  int httpCode = http.POST(json_state);
+  int http_code = http.POST(json_state);
 
   String payload = "";
-  if (httpCode > 0) {
+  if (http_code == 200) {
+    Serial.println("POST request code: " + String(http_code));
     payload = http.getString();
-    Serial.println("POST Request Code " + httpCode);
+  }
+  else if (http_code > 0) {
+    Serial.println("POST request error code: " + String(http_code));
+    Serial.println(http.getString());
   }
   else {
     Serial.println("Error on HTTP POST request");

@@ -34,3 +34,4 @@
 .DS_Store
 network_settings/network_setting_2.h
 network_settings/network_setting.h
+network_settings/network_setting_public.h

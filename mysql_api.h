@@ -1,7 +1,6 @@
 #ifndef MYSQL_API
 #define MYSQL_API
 
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include "wled.h"
@@ -25,10 +24,12 @@ String db_insert_wled_state(wled data) {
   int http_code = http.GET();
 
   String response = "";
-  if (http_code > 0) {
-    Serial.println(url);
+  if (http_code == 200) {
     response = http.getString();
-    Serial.println("GET Request Code: " + String(http_code));
+    Serial.println("GET request code: " + String(http_code));
+  }
+  else if (http_code > 0) {
+    Serial.println("GET request error code: " + String(http_code));
   }
   else {
     Serial.println("Error on HTTP GET request");
@@ -38,47 +39,47 @@ String db_insert_wled_state(wled data) {
   return response;
 }
 
-wled db_get_wled_state_and_ip(unsigned long int controller_id, int click_type) {
+String db_get_wled_state(String wled_ip, unsigned long int controller_id, int click_type) {
   Serial.println("Getting wled state from db");
   
-  String get_wled_state_and_ip_query = "get_wled_state_and_ip.php";
-  String query_params = "&click_type=" + String(click_type) +
+  String get_wled_state_and_ip_query = "get_wled_state.php";
+  String query_params = "wled_ip=" + wled_ip + 
+                        "&click_type=" + String(click_type) +
                         "&controller_id=" + String(controller_id);
   String url = mysql_ip + "/" + get_wled_state_and_ip_query + "?" + query_params;
 
   http.begin(client, url);
   int http_code = http.GET();
 
-  wled my_wled;
+  String payload = "";
 
-  if (http_code > 0) {
-    Serial.println("GET Request Code: " + String(http_code));
+  if (http_code == 200) {
+    Serial.println("GET request code: " + String(http_code));
 
-    String json_payload = http.getString();
+    payload = http.getString();
+
     DynamicJsonDocument doc(600);
-    DeserializationError error = deserializeJson(doc, json_payload);
-
+    DeserializationError error = deserializeJson(doc, payload);
     if (error) {
       Serial.print("Error parsing failed: ");
       Serial.println(error.c_str());
       http.end();
-      return my_wled;
+      return "";
     }
 
     // Extract variables from the JSON document
-    String json_state = doc["json_state"];
-    String wled_ip = doc["wled_ip"];
+    payload = doc["json_state"].as<String>();
 
-    my_wled.json_state = json_state;
-    my_wled.wled_ip = wled_ip;
-    my_wled.click_type = click_type;
-    my_wled.controller_id = controller_id;
-  } else {
+  }
+  else if (http_code > 0) {
+    Serial.println("GET request error code: " + String(http_code));
+  } 
+  else {
     Serial.println("Error on HTTP GET request");
   }
 
   http.end();
-  return my_wled;
+  return payload;
 }
 
 #endif // MYSQL_API
